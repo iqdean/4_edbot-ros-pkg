@@ -2,3 +2,9 @@ export PYTHONPATH=$PYTHONPATH:$(dirname $(find /usr/local -name mraa.py))
 source /opt/ros/indigo/setup.bash
 source /home/iqdean/catkin_ws/devel/setup.bash
 
+# ROS multimachine networking setup for robot side
+# roscore is running on the robot
+export ROS_MASTER_URI=http://localhost:11311
+export ROS_IP=192.168.2.15
+export ROS_HOSTNAME=192.168.2.15
+
