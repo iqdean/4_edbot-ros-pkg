@@ -6,6 +6,9 @@ $ roscd edbot/src
 $ sudo /bin/bash
 $ source startOdomAsRoot
 $ roslaunch edbot edbot_rbc.launch
+OR
+$ sudo -E /bin/bash
+$ roslaunch edbot edbot_rbc.launch
 
 edbot_rbc.launch file will start:
 a) roscore
