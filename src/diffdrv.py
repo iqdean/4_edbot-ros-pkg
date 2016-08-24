@@ -77,10 +77,11 @@ class DiffDrv(object):
 
 		message = 's %.2f %.2f\r' % (v, omega)
 		rospy.loginfo("DiffDrv.hvc: Output > Msg to Kanagroo : " + message)
-		'''self._WriteSerial(message)'''
+                '''self._SerialDataGateway.Write(message)'''
 
 	def _HandleReceivedLine(self,  line):
 		rospy.loginfo("DiffDrv.hrl: Output Ack/Err < Msgs rcvd from Kanagroo : " + line)
+
 
 if __name__ == '__main__':
 	diffdrv = DiffDrv()      #runs __init__ constructor to instance  diffdrv class object
