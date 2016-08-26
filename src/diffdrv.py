@@ -8,7 +8,7 @@ Created Aug 2016
   Differential Drive Robot Base Controller for edbot robot. 
   Inspired by Dr. Rainer Hessmer's ardros/arduino.py code below. Modified for 
   use on ubilinux based Intel Edision platform driving a Dimension Engineering 
-  Kangaroo Motion Controller + SaberTooth Motor Driver.
+  Kangaroo Motion Controller + SaberTooth 2x12 Motor Driver.
   Copyright (c) 2016 Ike A. Dean. All rights reserved.
 
   This program is free software: you can redistribute it and/or modify
@@ -49,7 +49,7 @@ from SerialDataGateway import SerialDataGateway
 
 class DiffDrv(object):
 	
-	def __init__(self, port="/dev/ttyMFD1", baudRate=9600):
+	def __init__(self, port="/dev/ttyMFD1", baudRate=19200):
 		self._Counter = 0
 
 		rospy.init_node('diffdrv')
@@ -64,6 +64,7 @@ class DiffDrv(object):
 	def Start(self):
 		rospy.loginfo("DiffDrv.Start: Starting")
 		self._SerialDataGateway.Start()
+                self._InitKangarooMC()
 
 	def Stop(self):
 		rospy.loginfo("DiffDrv.Stop: Stopping")
@@ -81,6 +82,16 @@ class DiffDrv(object):
 
 	def _HandleReceivedLine(self,  line):
 		rospy.loginfo("DiffDrv.hrl: Output Ack/Err < Msgs rcvd from Kanagroo : " + line)
+
+        def _InitKangarooMC(self):
+                # initial kangaroo motion controller
+                # initalize Kangaroo Motion Controller
+                message = 'd,stop\r\nd,start\r\nd,start\r\nt,stop\r\nt,start\r\nt,start\r\nd,s0\r\nt,s0\r\n'
+                self._SerialDataGateway.Write(message)
+                message = 'd,units 779 mm = 1024 lines\r\n'
+                self._SerialDataGateway.Write(message)
+                message = 't,units 360 degrees = 1891 lines\r\n'
+                self._SerialDataGateway.Write(message)
 
 
 if __name__ == '__main__':

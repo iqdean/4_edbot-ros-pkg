@@ -21,7 +21,7 @@ class SerialDataGateway(object):
 	Helper class for receiving lines from a serial port
 	'''
 
-	def __init__(self, port="/dev/ttyMFD1", baudrate=9600, lineHandler = _OnLineReceived):
+	def __init__(self, port="/dev/ttyMFD1", baudrate=19200, lineHandler = _OnLineReceived):
 		'''
 		Initializes the receiver class. 
 		port: The serial port to listen to.
@@ -65,9 +65,15 @@ class SerialDataGateway(object):
 		info = "sdg.Write: Writing to serial port: %s" %data
 		rospy.loginfo(info)
 		self._Serial.write(data)
+        #
+        # ed <-- /dev/ttyMFD1 --> Kanagroo Motion Controller serial link config
+        # 1       19200 baud      Kangaroo is setup for 19200 baud, kang <-9600-> sbt
+        # 2 edison gpio mux have to be configured to enable use of /dev/ttyMFD1 
+        #   by running cfgttyMFD1.sh bash script. we can autostart in /etc/rc.local
+        #   but for now, make sure to run $ sudo ./cfgttyMFD1.sh BEFORE using this node
 
 	if __name__ == '__main__':
-		dataReceiver = SerialDataGateway("/dev/ttyMFD1",  9600)
+		dataReceiver = SerialDataGateway("/dev/ttyMFD1",  19200)
 		dataReceiver.Start()
 
 		raw_input("sdg._main_: Hit <Enter> to end.")
