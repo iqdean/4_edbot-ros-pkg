@@ -2,12 +2,12 @@
 '''
 Created Aug 2016
 @author: Ike A. Dean
- 
+
   ROS PKG: edbot    ROS NODE: diffdrv.py
-  Copyright (c) 2016 Ike A. Dean. All rights reserved.    
-  Differential Drive Robot Base Controller for edbot robot. 
-  Inspired by Dr. Rainer Hessmer's ardros/arduino.py code below. Modified for 
-  use on ubilinux based Intel Edision platform driving a Dimension Engineering 
+  Copyright (c) 2016 Ike A. Dean. All rights reserved.
+  Differential Drive Robot Base Controller for edbot robot.
+  Inspired by Dr. Rainer Hessmer's ardros/arduino.py code below. Modified for
+  use on ubilinux based Intel Edision platform driving a Dimension Engineering
   Kangaroo Motion Controller + SaberTooth 2x12 Motor Driver.
   Copyright (c) 2016 Ike A. Dean. All rights reserved.
 
@@ -23,7 +23,7 @@ Created Aug 2016
 
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>
-  
+
 Created January, 2011
 
 @author: Dr. Rainer Hessmer
@@ -48,51 +48,60 @@ from std_msgs.msg import String
 from SerialDataGateway import SerialDataGateway
 
 class DiffDrv(object):
-	
+
 	def __init__(self, port="/dev/ttyMFD1", baudRate=19200):
 		self._Counter = 0
 
 		rospy.init_node('diffdrv')
-    
+
 		rospy.loginfo("DiffDrv _init_: Starting with serial port: " + port + ", baud rate: " + str(baudRate))
 
 		# subscriptions and publications
 		rospy.Subscriber("cmd_vel", Twist, self._HandleVelocityCommand)
-		
+
 		self._SerialDataGateway = SerialDataGateway(port, baudRate,  self._HandleReceivedLine)
 
 	def Start(self):
 		rospy.loginfo("DiffDrv.Start: Starting")
 		self._SerialDataGateway.Start()
-                self._InitKangarooMC()
+        	self._KangarooMC_start()
 
 	def Stop(self):
 		rospy.loginfo("DiffDrv.Stop: Stopping")
+		self._KangarooMC_stop()
 		self._SerialDataGateway.Stop()
-		
+
 	def _HandleVelocityCommand(self, twistCommand):
 		""" Handle movement requests. """
-		v = twistCommand.linear.x        # m/s
-		omega = twistCommand.angular.z      # rad/s
-		rospy.loginfo("DiffDrv.hvc: Input ( /cmd_vel msg from ROS) : " + str(v) + "," + str(omega))
-
-		message = 's %.2f %.2f\r' % (v, omega)
-		rospy.loginfo("DiffDrv.hvc: Output > Msg to Kanagroo : " + message)
-                '''self._SerialDataGateway.Write(message)'''
+		v1 = twistCommand.linear.x        # m/s <- from ros
+		v2 = v1*1000                      # mm/s -> to kanagroo motion controller
+		omega1 = twistCommand.angular.z   # rad/s <- from ros
+		omega2 = omega1*57.2958           # deg/s -> to kangroo motion controller
+		rospy.loginfo("HVC ros in: " + str(v1) + "," + str(omega1))
+        	rospy.loginfo("HVC kmc out:" + str(int(v2)) + "," + str(int(omega2)))
+		message = 'd,s' + str(int(v2)) + '\r\n' + 't,s' + str(int(omega2)) + '\r\n'
+		rospy.loginfo("HVC kmc xmt: \n" + message)
+		self._SerialDataGateway.Write(message)
 
 	def _HandleReceivedLine(self,  line):
-		rospy.loginfo("DiffDrv.hrl: Output Ack/Err < Msgs rcvd from Kanagroo : " + line)
+		rospy.loginfo("HRL kmc rcv: " + line)
 
-        def _InitKangarooMC(self):
-                # initial kangaroo motion controller
-                # initalize Kangaroo Motion Controller
-                message = 'd,stop\r\nd,start\r\nd,start\r\nt,stop\r\nt,start\r\nt,start\r\nd,s0\r\nt,s0\r\n'
-                self._SerialDataGateway.Write(message)
-                message = 'd,units 779 mm = 1024 lines\r\n'
-                self._SerialDataGateway.Write(message)
-                message = 't,units 360 degrees = 1891 lines\r\n'
-                self._SerialDataGateway.Write(message)
+	def _KangarooMC_start(self):
+		# start kmc using simplified serial interface 
+		message = 'd,start\r\nd,start\r\nt,start\r\nt,start\r\nd,s0\r\nt,s0\r\n'
+		self._SerialDataGateway.Write(message)
+		# set the units for all subseqent drive/turn commands
+		# units are based on robot geometry (wheel dia, track width, encoder resolution)
+		# REF: https://www.dimensionengineering.com/info/encoders?mode=mixed
+		message = 'd,units 779 mm = 1024 lines\r\n'
+		self._SerialDataGateway.Write(message)
+		message = 't,units 360 degrees = 1891 lines\r\n'
+		self._SerialDataGateway.Write(message)
 
+    	def _KangarooMC_stop(self):
+        	# stop kangaroo motion controller
+        	message = 'd,stop\r\nt,stop\r\n'
+        	self._SerialDataGateway.Write(message)
 
 if __name__ == '__main__':
 	diffdrv = DiffDrv()      #runs __init__ constructor to instance  diffdrv class object
@@ -102,4 +111,3 @@ if __name__ == '__main__':
 
 	except rospy.ROSInterruptException:
 		diffdrv.Stop()
-
