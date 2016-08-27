@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Updated Aug 2016 
+Updated Aug 2016
 @author: Ike A. Dean
 Modified for use with edbot robot
 
@@ -23,7 +23,7 @@ class SerialDataGateway(object):
 
 	def __init__(self, port="/dev/ttyMFD1", baudrate=19200, lineHandler = _OnLineReceived):
 		'''
-		Initializes the receiver class. 
+		Initializes the receiver class.
 		port: The serial port to listen to.
 		receivedLineHandler: The function to call when a line was received.
 		'''
@@ -32,7 +32,7 @@ class SerialDataGateway(object):
 		self._Baudrate = baudrate
 		self.ReceivedLineHandler = lineHandler
 		self._KeepRunning = False
-    
+
  	def Start(self):
 		rospy.loginfo("sdg.Start: Starting serial gateway")
 		self._Serial = serial.Serial(port = self._Port, baudrate = self._Baudrate, timeout = 1)
@@ -62,13 +62,13 @@ class SerialDataGateway(object):
 				stringIO.write(data)
 
 	def Write(self, data):
-		info = "sdg.Write: Writing to serial port: %s" %data
+		info = "sdg.Write serial port: %s" %data
 		rospy.loginfo(info)
 		self._Serial.write(data)
         #
         # ed <-- /dev/ttyMFD1 --> Kanagroo Motion Controller serial link config
         # 1       19200 baud      Kangaroo is setup for 19200 baud, kang <-9600-> sbt
-        # 2 edison gpio mux have to be configured to enable use of /dev/ttyMFD1 
+        # 2 edison gpio mux have to be configured to enable use of /dev/ttyMFD1
         #   by running cfgttyMFD1.sh bash script. we can autostart in /etc/rc.local
         #   but for now, make sure to run $ sudo ./cfgttyMFD1.sh BEFORE using this node
 

@@ -64,7 +64,7 @@ class DiffDrv(object):
 	def Start(self):
 		rospy.loginfo("DiffDrv.Start: Starting")
 		self._SerialDataGateway.Start()
-        	self._KangarooMC_start()
+		self._KangarooMC_start()
 
 	def Stop(self):
 		rospy.loginfo("DiffDrv.Stop: Stopping")
@@ -73,21 +73,21 @@ class DiffDrv(object):
 
 	def _HandleVelocityCommand(self, twistCommand):
 		""" Handle movement requests. """
-		v1 = twistCommand.linear.x        # m/s <- from ros
-		v2 = v1*1000                      # mm/s -> to kanagroo motion controller
-		omega1 = twistCommand.angular.z   # rad/s <- from ros
-		omega2 = omega1*57.2958           # deg/s -> to kangroo motion controller
+		v1 = twistCommand.linear.x          # m/s <- from ros
+		v2 = int(round(v1*1000))            # mm/s -> to kanagroo motion controller
+		omega1 = twistCommand.angular.z     # rad/s <- from ros
+		omega2 = int(round(omega1*57.2958)) # deg/s -> to kangroo motion controller
 		rospy.loginfo("HVC ros in: " + str(v1) + "," + str(omega1))
-        	rospy.loginfo("HVC kmc out:" + str(int(v2)) + "," + str(int(omega2)))
-		message = 'd,s' + str(int(v2)) + '\r\n' + 't,s' + str(int(omega2)) + '\r\n'
-		rospy.loginfo("HVC kmc xmt: \n" + message)
+		rospy.loginfo("HVC kmc out:" + str(v2) + "," + str(omega2)
+		message = 'd,s' + str(v2) + '\r\n' + 't,s' + str(omega2) + '\r\n'
+		#rospy.loginfo("HVC kmc xmt: \n" + message)
 		self._SerialDataGateway.Write(message)
 
 	def _HandleReceivedLine(self,  line):
 		rospy.loginfo("HRL kmc rcv: " + line)
 
 	def _KangarooMC_start(self):
-		# start kmc using simplified serial interface 
+		# start kmc using simplified serial interface
 		message = 'd,start\r\nd,start\r\nt,start\r\nt,start\r\nd,s0\r\nt,s0\r\n'
 		self._SerialDataGateway.Write(message)
 		# set the units for all subseqent drive/turn commands
@@ -98,10 +98,10 @@ class DiffDrv(object):
 		message = 't,units 360 degrees = 1891 lines\r\n'
 		self._SerialDataGateway.Write(message)
 
-    	def _KangarooMC_stop(self):
-        	# stop kangaroo motion controller
-        	message = 'd,stop\r\nt,stop\r\n'
-        	self._SerialDataGateway.Write(message)
+	def _KangarooMC_stop(self):
+		# stop kangaroo motion controller
+		message = 'd,stop\r\nt,stop\r\n'
+		self._SerialDataGateway.Write(message)
 
 if __name__ == '__main__':
 	diffdrv = DiffDrv()      #runs __init__ constructor to instance  diffdrv class object
