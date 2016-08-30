@@ -62,8 +62,8 @@ class SerialDataGateway(object):
 				stringIO.write(data)
 
 	def Write(self, data):
-		info = "sdg.Write serial port: %s" %data
-		rospy.loginfo(info)
+		#info = "sdg.Write serial port: %s" %data
+		#rospy.loginfo(data)
 		self._Serial.write(data)
         #
         # ed <-- /dev/ttyMFD1 --> Kanagroo Motion Controller serial link config

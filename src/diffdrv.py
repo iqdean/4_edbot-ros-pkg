@@ -73,14 +73,11 @@ class DiffDrv(object):
 
 	def _HandleVelocityCommand(self, twistCommand):
 		""" Handle movement requests. """
-		v1 = twistCommand.linear.x          # m/s <- from ros
-		v2 = int(round(v1*1000))            # mm/s -> to kanagroo motion controller
-		omega1 = twistCommand.angular.z     # rad/s <- from ros
-		omega2 = int(round(omega1*57.2958)) # deg/s -> to kangroo motion controller
-		rospy.loginfo("HVC ros in: " + str(v1) + "," + str(omega1))
-		rospy.loginfo("HVC kmc out:" + str(v2) + "," + str(omega2)
+		v1 = twistCommand.linear.x          # m/s   from ros
+		v2 = int(round(v1*1000))            # mm/s  to kanagroo motion controller
+		omega1 = twistCommand.angular.z     # rad/s from ros
+		omega2 = int(round(omega1*57.2958)) # deg/s to kangroo motion controller
 		message = 'd,s' + str(v2) + '\r\n' + 't,s' + str(omega2) + '\r\n'
-		#rospy.loginfo("HVC kmc xmt: \n" + message)
 		self._SerialDataGateway.Write(message)
 
 	def _HandleReceivedLine(self,  line):
