@@ -28,7 +28,7 @@ class edbotOdom(object):
     def Stop(self):
         rospy.logdebug("Stopping")
 
-    def my_callback(self):
+    def update(self):
         now = rospy.get_rostime()
         rospy.loginfo("Current time %i %i", now.secs, now.nsecs)
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
         odometry.Start()
 	r = rospy.Rate(1)
 	while not rospy.is_shutdown():
-		odometry.my_callback()
+		odometry.update()
 		r.sleep()
 
     except rospy.ROSInterruptException:
