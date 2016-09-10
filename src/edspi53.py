@@ -14,7 +14,7 @@ import time
 import math
 
 '''
-
+NOTES:
 libspi52.c returns:
 
 typedef struct {
@@ -25,9 +25,12 @@ typedef struct {
   uint32_t y_ts_sec;      // y-axis timestamp (sec:nsec)
   uint32_t y_ts_ns;
 } mtrEnc;
+
+Class object names:   Name
+Class method names:   name
 '''
 
-class mtrEnc(ctypes.Structure):
+class MotorEncoders(ctypes.Structure):
     _fields_ = [("x_enc_cnt", ctypes.c_uint),
                 ("x_ts_sec", ctypes.c_uint),
                 ("x_ts_ns", ctypes.c_uint),
@@ -35,31 +38,33 @@ class mtrEnc(ctypes.Structure):
                 ("y_ts_sec", ctypes.c_uint),
                 ("y_ts_ns", ctypes.c_uint)]
 
-class edspi53(object):
 
-    def Start(self):
+class Spi(object):
+
+    def start(self):
         # initialize the library
-        self.test = self.mylib.edspi52_init(None)
+        self.test = self.lib.edspi52_init(None)
 
-    def Stop(self):
+    def stop(self):
         # deinit the library
-        self.test = self.mylib.edspi52_deinit(None)
+        self.test = self.lib.edspi52_deinit(None)
 
+    # this function is called everytime this class is instanced
     def __init__(self):
-        # this function will be called everytime this class is instanced
-        # load the library
-        self.mylib = ctypes.cdll.LoadLibrary("./libedspi52.so")
+        # load libedspi52.so library
+        self.lib = ctypes.cdll.LoadLibrary("./libedspi52.so")
         # define library function arg types
-        self.mylib.edspi52_init.argtypes = None
-        self.mylib.edspi52_init.restype = ctypes.c_uint
-        self.mylib.edspi52_deinit.argtypes = None
-        self.mylib.edspi52_deinit.restype = ctypes.c_uint
+        self.lib.edspi52_init.argtypes = None
+        self.lib.edspi52_init.restype = ctypes.c_uint
+        self.lib.edspi52_deinit.argtypes = None
+        self.lib.edspi52_deinit.restype = ctypes.c_uint
         # getXYEncCount() returns mtrEnc struct on the stack
-        self.mylib.getXYEncCount.argtypes = None
-        self.mylib.getXYEncCount.restype = mtrEnc
+        self.lib.getXYEncCount.argtypes = None
+        self.lib.getXYEncCount.restype = MotorEncoders
 
-    def rdWheelEncoders(self):
-        self.xyenc = mylib.getXYEncCount(None)
+    def rdEncoders(self):
+	# read the wheel encoders
+        self.xyenc = self.lib.getXYEncCount(None)
         print "x_enc: %8X %d %d" % (self.xyenc.x_enc_cnt, self.xyenc.x_ts_sec, self.xyenc.x_ts_ns)
         print "y_enc: %8X %d %d" % (self.xyenc.y_enc_cnt, self.xyenc.y_ts_sec, self.xyenc.y_ts_ns)
         return(self.xyenc)
