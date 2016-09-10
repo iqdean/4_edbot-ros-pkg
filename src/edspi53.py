@@ -31,10 +31,10 @@ Class method names:   name
 '''
 
 class MotorEncoders(ctypes.Structure):
-    _fields_ = [("x_enc_cnt", ctypes.c_uint),
+    _fields_ = [("x_enc", ctypes.c_uint),
                 ("x_ts_sec", ctypes.c_uint),
                 ("x_ts_ns", ctypes.c_uint),
-                ("y_enc_cnt", ctypes.c_uint),
+                ("y_enc", ctypes.c_uint),
                 ("y_ts_sec", ctypes.c_uint),
                 ("y_ts_ns", ctypes.c_uint)]
 
@@ -63,8 +63,9 @@ class Spi(object):
         self.lib.getXYEncCount.restype = MotorEncoders
 
     def rdEncoders(self):
+
 	# read the wheel encoders
-        self.xyenc = self.lib.getXYEncCount(None)
-        print "x_enc: %8X %d %d" % (self.xyenc.x_enc_cnt, self.xyenc.x_ts_sec, self.xyenc.x_ts_ns)
-        print "y_enc: %8X %d %d" % (self.xyenc.y_enc_cnt, self.xyenc.y_ts_sec, self.xyenc.y_ts_ns)
-        return(self.xyenc)
+        self.ei = self.lib.getXYEncCount(None)
+        print "ei.x : %8X %d %d" % (self.ei.x_enc, self.ei.x_ts_sec, self.ei.x_ts_ns)
+        print "ei.y : %8X %d %d" % (self.ei.y_enc, self.ei.y_ts_sec, self.ei.y_ts_ns)
+        return(self.ei)
