@@ -18,7 +18,7 @@ t1 = edspi53.MotorEncoders()
 # initial spi library to read wheel encoders
 spi = edspi53.Spi()
 spi.start()
-odom = Odom()
+odom = odom53.Odom()
 
 dmpEncData(t0,"t0")
 dmpEncData(t1,"t1")

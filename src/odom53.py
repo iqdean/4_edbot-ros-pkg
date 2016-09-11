@@ -49,7 +49,7 @@ Every 1/Rate Hz
 	double Omega;   // angular speed (radians per sec)
 '''
 
-import cytpes
+import ctypes
 import time
 import math
 
@@ -76,12 +76,14 @@ class Odom(object):
     PI = 3.141592653589793
     TwoPI = 3.141592653589793
 
-    def update(t0,t1):
-        print "IN : X: %d Y: %d Heading: %d V: %d Omega: %d" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, odom.Omega) 
+    def update(self,t0,t1):
+	print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
+        print "t0.y : %8X %d %d" % (t0.y_enc, t0.y_ts_sec, t0.y_ts_ns)
+        print "IN : X: %d Y: %d Heading: %d V: %d Omega: %d" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega) 
         deltaLeft = t0.x_enc - t1.x_enc    # delta = current - previous
         deltaRight= t0.y_enc - t1.y_enc    #            t0       t1
 
-        deltaTime = (t0_x_ts_sec - t1_x_ts_sec) + (t0_x_ts_ns - t1_x_ts_ns)   # dt in ns
+        deltaTime = (t0.x_ts_sec - t1.x_ts_sec) + (t0.x_ts_ns - t1.x_ts_ns)   # dt in ns
         deltaTime = deltaTime*(1.0/1000000000.0)                              # dt in sec
 
         deltaDistance = 0.5 * (deltaLeft + deltaRight)*Odom.k1_dpc
@@ -95,11 +97,11 @@ class Odom(object):
         Odom.Y += deltaY
         Odom.Heading += deltaHeading
 
-        if (Odom.Heading > PI):
-                Odom.Heading -= TwoPI
+        if (Odom.Heading > Odom.PI):
+                Odom.Heading -= Odom.TwoPI
         else:
-                if (Odom.Heading <= -PI):
-                        Odom.Heading += TwoPI
+                if (Odom.Heading <= -Odom.PI):
+                        Odom.Heading += Odom.TwoPI
 
         Odom.V = deltaDistance/deltaTime
         Odom.Omega = deltaHeading/deltaTime
