@@ -25,16 +25,6 @@ countsPerRev = 1024      # 1024 = wheel encoder resolution
 0.0016614770038516395
 >>> 
 
-'''
-
-# Constants
-
-k1_dpc = 0.0007596272861609695
-k2_rpc = 0.0016614770038516395
-PI = 3.141592653589793
-TwoPI = 3.141592653589793
-
-'''
                 x LEFT          y RIGHT     <- looking forward on the robot
                   WHEEL           WHEEL
 current	 t0	t0.x_enc	t0.y_enc
@@ -61,14 +51,6 @@ Every 1/Rate Hz
 	double Omega;   // angular speed (radians per sec)
 
 '''
-
-# VARIABLES operated on by computeOdom(t0, t1)
-
-X = 0.0
-Y = 0.0
-Heading = 0.0
-V = 0.0
-Omega = 0.0
 
 def computeOdom(t0, t1):
 
@@ -104,6 +86,21 @@ def computeOdom(t0, t1):
 def dmpEncData(src, str):
 	print str+".x : %8X %d %d" % (src.x_enc, src.x_ts_sec, src.x_ts_ns)
 	print str+".y : %8X %d %d" % (src.y_enc, src.y_ts_sec, src.y_ts_ns)
+
+# Constants
+
+k1_dpc = 0.0007596272861609695
+k2_rpc = 0.0016614770038516395
+PI = 3.141592653589793
+TwoPI = 3.141592653589793
+
+# VARIABLES operated on by computeOdom(t0, t1)
+
+X = 0.0
+Y = 0.0
+Heading = 0.0
+V = 0.0
+Omega = 0.0
         
 # setup storage for current (t0) and previous (t1) periodic samples
 t0 = edspi53.MotorEncoders()   # module.class() edspi53.MotorEncoders()
