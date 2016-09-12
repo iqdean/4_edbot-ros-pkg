@@ -79,9 +79,33 @@ class Odom(object):
     def update(self,t0,t1):
 	print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
         print "t0.y : %8X %d %d" % (t0.y_enc, t0.y_ts_sec, t0.y_ts_ns)
-        print "IN : X: %d Y: %d Heading: %d V: %d Omega: %d" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega) 
-        deltaLeft = t0.x_enc - t1.x_enc    # delta = current - previous
-        deltaRight= t0.y_enc - t1.y_enc    #            t0       t1
+        print "IN : X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
+
+	# encoder counts need to be interpeted as 32bit 2's complement encoded numbers
+
+	if (t0.x_enc > 0x7FFFFFFF):
+		t0x = -((~t0.x_enc & 0xFFFFFFFF)+1)
+	else:
+		t0x = t0.x_enc
+
+        if (t0.y_enc > 0x7FFFFFFF):
+                t0y = -((~t0.y_enc & 0xFFFFFFFF)+1)
+        else:
+                t0y = t0.y_enc
+
+        if (t1.x_enc > 0x7FFFFFFF):
+                t1x = -((~t1.x_enc & 0xFFFFFFFF)+1)
+        else:
+                t1x = t1.x_enc
+
+        if (t1.y_enc > 0x7FFFFFFF):
+                t1y = -((~t1.y_enc & 0xFFFFFFFF)+1)
+        else:
+                t1y = t1.y_enc
+
+ 
+        deltaLeft = t0x - t1x    # delta = current - previous
+        deltaRight= t0y - t1y    #            t0       t1
 
         deltaTime = (t0.x_ts_sec - t1.x_ts_sec) + (t0.x_ts_ns - t1.x_ts_ns)   # dt in ns
         deltaTime = deltaTime*(1.0/1000000000.0)                              # dt in sec
@@ -106,5 +130,5 @@ class Odom(object):
         Odom.V = deltaDistance/deltaTime
         Odom.Omega = deltaHeading/deltaTime
 
-        print "OUT: X: %d Y: %d Heading: %d V: %d Omega: %d" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
+        print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
  
