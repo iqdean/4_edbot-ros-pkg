@@ -2,9 +2,9 @@
 test-odom53.py = test-edspi53.py + odometry calculations
 '''
 
-import edspi53
-import odom53
-import math
+import edspi53     # class MotorEncoder() gets defined in here
+import odom53      # & you don't need to define it again in here
+import math        # but now odom53 depends on edspi53 being already imported
 
 def dmpEncData(src, str):
 	print str+".x : %8X %d %d" % (src.x_enc, src.x_ts_sec, src.x_ts_ns)
