@@ -66,6 +66,6 @@ class Spi(object):
 
 	# read the wheel encoders
         self.ei = self.lib.getXYEncCount(None)
-        print "ei.x : %8X %d %d" % (self.ei.x_enc, self.ei.x_ts_sec, self.ei.x_ts_ns)
-        print "ei.y : %8X %d %d" % (self.ei.y_enc, self.ei.y_ts_sec, self.ei.y_ts_ns)
+        # print "ei.x : %8X %d %d" % (self.ei.x_enc, self.ei.x_ts_sec, self.ei.x_ts_ns)
+        # print "ei.y : %8X %d %d" % (self.ei.y_enc, self.ei.y_ts_sec, self.ei.y_ts_ns)
         return(self.ei)

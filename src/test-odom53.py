@@ -38,6 +38,7 @@ while (count < 1000):
 	dmpEncData(t1,"t1")
 
         odom.update(t0,t1)       # compute odometry using t0 t1 samples
+	print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (odom.X, odom.Y, odom.Heading, odom.V, odom.Omega)
 
 	raw_input('--> ')        # wait for input
 	count = count+1

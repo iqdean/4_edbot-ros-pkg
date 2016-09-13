@@ -81,9 +81,9 @@ class Odom(object):
     TwoPI = 6.283185307179586
 
     def update(self,t0,t1):
-	print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
-        print "t0.y : %8X %d %d" % (t0.y_enc, t0.y_ts_sec, t0.y_ts_ns)
-        print "IN : X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
+	#print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
+        #print "t0.y : %8X %d %d" % (t0.y_enc, t0.y_ts_sec, t0.y_ts_ns)
+        #print "IN : X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
 
 	# encoder counts need to be interpeted as 32bit 2's complement encoded numbers
 
@@ -142,5 +142,5 @@ class Odom(object):
         Odom.V = deltaDistance/deltaTime
         Odom.Omega = deltaHeading/deltaTime
 
-        print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
+        #print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
  
