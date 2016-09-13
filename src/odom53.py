@@ -78,7 +78,7 @@ class Odom(object):
     k1_dpc = 0.0007596272861609695
     k2_rpc = 0.0016614770038516395
     PI = 3.141592653589793
-    TwoPI = 3.141592653589793
+    TwoPI = 6.283185307179586
 
     def update(self,t0,t1):
 	print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
@@ -126,11 +126,18 @@ class Odom(object):
         Odom.Y += deltaY
         Odom.Heading += deltaHeading
 
-        if (Odom.Heading > Odom.PI):
-                Odom.Heading -= Odom.TwoPI
+	# ROS Robot Coordinate Frames are:                         X fwd, Y left, Z up
+	# Polarity of rotations about Z per right hand rule:  - rotate left, + rotate right
+
+	# Limit Heading to +180 to -180 relative to X
+	# +180 (pi) -- left -- 0 -- right -- (-pi) (-180)
+        #  3.14        turn         turn            -3.14
+
+        if (Odom.Heading > Odom.PI):                # if (heading > 180) then heading = heading - 360
+                Odom.Heading -= Odom.TwoPI          #     181                 -179    = 181 - 360
         else:
-                if (Odom.Heading <= -Odom.PI):
-                        Odom.Heading += Odom.TwoPI
+                if (Odom.Heading <= -Odom.PI):      # if (heading <= -180) then heading = heading + 360
+                        Odom.Heading += Odom.TwoPI  #     -181                  +179    = -181 + 360 
 
         Odom.V = deltaDistance/deltaTime
         Odom.Omega = deltaHeading/deltaTime
