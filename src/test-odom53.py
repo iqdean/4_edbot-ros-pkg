@@ -23,8 +23,13 @@ odom = odom53.Odom()
 dmpEncData(t0,"t0")
 dmpEncData(t1,"t1")
 
+# on program start, make previous = initial to avoid delta in computed
+# values due to previous being 0 and t0 being something other than 0
+t0 = spi.rdEncoders()
+t1 = spi.rdEncoders()
+
 count = 0
-while (count < 100):
+while (count < 1000):
 
 	t1 = t0                  # previous <- current
 	t0 = spi.rdEncoders()    # current <- new sample
