@@ -11,28 +11,30 @@ countsPerRev = 1024      # 1024 = wheel encoder resolution
 
 >>> import math
 >>> math.pi
-3.141592653589793
->>> wd = .2476
->>> tw = .4572
->>> cpr = 1024
+3.141592653589793 
+Robot Parmeters
+>>> wd = .2476         wheelDiameter   .2476 m = 9.75"
+>>> tw = .4572         trackWidth      .4572 m = 18"
+>>> cpr = 1024         Wheel Encoders  1024 cpr (counts per rev)
+
 >>> dpc = (math.pi * wd)/cpr   distancePerCount  k1
 >>> rpc = dpc/tw               radiansPerCount   k2
+
 >>> dpc
 0.0007596272861609695
 >>> rpc
 0.0016614770038516395
->>> 
 
-                x LEFT          y RIGHT     <- looking forward on the robot
-                  WHEEL           WHEEL
-current	 t0	t0.x_enc	t0.y_enc
-previous t1     t1.x_enc        t1.y_enc
+                x LEFT    y RIGHT     <- looking forward on the robot
+                WHEEL     WHEEL
+current	 t0	t0.x_enc  t0.y_enc
+previous t1     t1.x_enc  t1.y_enc
 
 ex data set:
-          count   ts_sec    ts_ns                      ts_ns range
-t0.x :    27AAB 1473554582 473208282    < current      000 000 000
-t0.y :    27A01 1473554582 473332905                     ms   us  ns
-                                                       999 999 999 + 1ns = 1.000 000 000 sec
+            count   ts_sec    ts_ns                 ts_ns range
+t0.x :    27AAB 1473554582 473208282    < current   000 000 000
+t0.y :    27A01 1473554582 473332905                ms  us  ns
+                                                    999 999 999 + 1ns = 1.000 000 000 sec
 t1.x :    27676 1473554581 373834059    < last
 t1.y :    275CA 1473554581 374106956
 
@@ -109,8 +111,9 @@ class Odom(object):
         deltaLeft = t0x - t1x    # delta = current - previous
         deltaRight= t0y - t1y    #            t0       t1
 
-        deltaTime = (t0.x_ts_sec - t1.x_ts_sec) + (t0.x_ts_ns - t1.x_ts_ns)   # dt in ns
-        deltaTime = deltaTime*(1.0/1000000000.0)                              # dt in sec
+        deltaTime_sec = (t0.x_ts_sec - t1.x_ts_sec)                    # dt_sec part
+        deltaTime_ns = (t0.x_ts_ns - t1.x_ts_ns)*(1.0/1000000000.0)    # dt_ns part in sec
+        deltaTime = deltaTime_sec + deltaTime_ns                       # delta t in sec
 
         deltaDistance = 0.5 * (deltaLeft + deltaRight)*Odom.k1_dpc
 
