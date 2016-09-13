@@ -8,10 +8,10 @@ libspi52.so - uses libmraa's memory mapped fast gpio to bitbang spi bus
 connected to robogia quadrature encoder decoder
 
 '''
-
+import ctypes
 import time
 import math
-import edbot      # import ctypes & class TimeStampedEncoderData()
+
 
 '''
 NOTES:
@@ -29,6 +29,8 @@ typedef struct {
 Class object names:   Name
 Class method names:   name
 
+'''
+
 class MotorEncoders(ctypes.Structure):
     _fields_ = [("x_enc", ctypes.c_uint),
                 ("x_ts_sec", ctypes.c_uint),
@@ -36,7 +38,6 @@ class MotorEncoders(ctypes.Structure):
                 ("y_enc", ctypes.c_uint),
                 ("y_ts_sec", ctypes.c_uint),
                 ("y_ts_ns", ctypes.c_uint)]
-'''
 
 class Spi(object):
 

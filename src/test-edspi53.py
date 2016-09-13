@@ -1,4 +1,3 @@
-import edbot
 import edspi53
 
 def dmpEncData(data, label):
@@ -6,8 +5,8 @@ def dmpEncData(data, label):
         print label+".y : %8X %d %d" % (data.y_enc, data.y_ts_sec, data.y_ts_ns)
 
 # setup storage for current (t0) and previous (t1) periodic samples
-t0 = edbot.TimeStampedEncoderData()   
-t1 = edbot.TimeStampedEncoderData()
+t0 = edspi53.MotorEncoders()   
+t1 = edspi53.MotorEncoders()
 
 # initial spi library to read wheel encoders
 spi = edspi53.Spi()
