@@ -7,6 +7,57 @@ Created Sept 2016
  this ros node publishs odometry messages so ros navigation stack
  can localize the robot on a static map of the world.
 
+ Thanks to Intel's lame design of edison gpio mux controls and 
+ the idiotic libmraa that controls the gpio mux setting using sysfs:
+
+ a) U have to have root priviliges to start programs that incorporate 
+    libmraa to config edison gpio settings.
+ b) whenever you use libmraa to initialize specific gpio pins, 
+    various other gpio signals will glitch.
+ c) the spi bus interface driver that intel puts out is useless for any
+    practical purposes...it's quicker to bitbang the spi i/f than use
+    intel's spi driver, which is the for having the libspi5.so library
+    use libmraa's memory-mapped gpio i/f to bit bang the spi bus to read
+    wheel encoders interfaced to spi-based quadrature encoder decoders
+
+ (a) + (b) + (c) results in  INTEL EDISON and it's associated software 
+  support being a real pain in the ass to work with: 
+
+ libspi52.so uses libmraa mem-mapped gpio to bitbang spi i/f
+ libmraa's initialization routines that config spi gpio pins cause
+ the serial port gpio pins to glitch which causes kangaroo mc to 
+ detect serial connection disconnect error E6, which requires the 
+ Kangaroo MC to be reinitialized otherwise the differential drive 
+ system stops responding to drive/turn signals being sent to it
+ over the serial port.
+
+ WORKAROUNDS:
+ 1st 
+  Start odometriclocalizer.py node... this node will load
+  libspi52.so which will use libmraa to initialze spi bus gpio
+  pins which will cause the serial port gpio pins to glitch
+  - since this node uses libspi52.so which uses libmraa, this
+    node has to be launched with root privileges. 
+  - launching a rosnode with root privilages instead of a normal
+    user IS NOT the norm, so it requires following song and dance:
+
+ iqdean@ubilinux:~$ roscd edbot
+ iqdean@ubilinux:~/catkin_ws/src/edbot$ sudo /bin/bash
+ root@ubilinux:/home/iqdean/catkin_ws/src/edbot# source src/startOdomAsRoot
+ root@ubilinux:/home/iqdean/catkin_ws/src/edbot# rosrun edbot src/odometriclocalizer.py
+
+ 2nd 
+ - Start diffdrv node AFTER starting odometriclocalizer node
+   so libmraa gpio init's don't clobber the serial port connection
+   with Dimension Engineering's Kangaroo Motion Contoller over 
+   serial port /dev/ttyMFLD2. The cfgttyMFLD2.sh script incorporated into 
+   /etc/rc.local (so it start with root privilages) uses sysfs i/f to 
+   enable gpio pins for use as serial port... only the cfgttyMFLD2.sh has
+   to be run with root priviliges, the diffdrv node can be started as normal
+   user since it assumes the serial port gpio pins have already been configd:
+
+   $ rosrun edbot src/diffdrv.py
+ 
 '''
 
 import roslib

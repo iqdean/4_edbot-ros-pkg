@@ -1,0 +1,4 @@
+export PYTHONPATH=$PYTHONPATH:$(dirname $(find /usr/local -name mraa.py))
+source /opt/ros/indigo/setup.bash
+source /home/iqdean/catkin_ws/devel/setup.bash
+

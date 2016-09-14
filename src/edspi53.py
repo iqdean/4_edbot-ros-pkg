@@ -52,7 +52,7 @@ class Spi(object):
     # this function is called everytime this class is instanced
     def __init__(self):
         # load libedspi52.so library
-        self.lib = ctypes.cdll.LoadLibrary("./libedspi52.so")
+        self.lib = ctypes.cdll.LoadLibrary("/usr/local/lib/libedspi52.so")   # install library to /usr/local/lib
         # define library function arg types
         self.lib.edspi52_init.argtypes = None
         self.lib.edspi52_init.restype = ctypes.c_uint
