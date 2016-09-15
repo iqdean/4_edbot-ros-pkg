@@ -88,14 +88,49 @@ class edbotOdom(object):
         #rospy.loginfo("Current time %i %i", now.secs, now.nsecs)
         self._t1 = self._t0                   # previous t1 = current
         self._t0 = self._spi.rdEncoders()     # current  t0 = new sample  ---present state--
-        self._odom.update(self._t0, self._t1) # calc odometry = f(t0,t1, [X Y Heading V Omega])
+        self._odom.update(self._t0, self._t1) # compute odometry = f(t0,t1, [X Y Heading V Omega])
 
         #print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
-        self._cnt -= 1
-        if ( (self._cnt == 0) || (self._cnt == 10) ):
-                    print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
-                    if (self._cnt == 0):
-                        self._cnt = 20
+        #self._cnt -= 1
+        #if ( (self._cnt == 0) or (self._cnt == 10) ):
+        #            print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
+        #            if (self._cnt == 0):
+        #                self._cnt = 20
+
+        quaternion = Quaternion()
+	quaternion.x = 0.0 
+	quaternion.y = 0.0
+	quaternion.z = sin(self._odom.Heading / 2.0)
+	quaternion.w = cos(self._odom.Heading / 2.0)
+		
+	rosNow = rospy.Time.now()
+			
+	# First, we'll publish the transform from frame odom to frame base_link over tf
+	# Note that sendTransform requires that 'to' is passed in before 'from' while
+	# the TransformListener' lookupTransform function expects 'from' first followed by 'to'.
+	self._OdometryTransformBroadcaster.sendTransform(
+            (self._odom.X, self._odom.Y, 0),
+            (quaternion.x, quaternion.y, quaternion.z, quaternion.w),
+            rosNow,
+            "base_link",
+            "odom")
+
+	# next, we'll publish the odometry message over ROS
+	odometry = Odometry()
+	odometry.header.frame_id = "odom"
+	odometry.header.stamp = rosNow
+	odometry.pose.pose.position.x = self._odom.X
+	odometry.pose.pose.position.y = self._odom.Y
+	odometry.pose.pose.position.z = 0
+	odometry.pose.pose.orientation = quaternion
+
+	odometry.child_frame_id = "base_link"
+	odometry.twist.twist.linear.x = self._odom.V
+	odometry.twist.twist.linear.y = 0
+	odometry.twist.twist.angular.z = self._odom.Omega
+
+	self._OdometryPublisher.publish(odometry)
+
 
     def __init__(self):
 
@@ -109,8 +144,10 @@ class edbotOdom(object):
         # setup storage for current(t0) and last(t1) periodic samples
         self._t0 = edspi53.MotorEncoders()    # of time stamped wheel encoder data
         self._t1 = edspi53.MotorEncoders()
+
         self._spi = edspi53.Spi()   # instance Spi() class to read samples of 
-        self._spi.start()           # time stamped wheel encoder data using libspi52.so
+        self._spi.start()           #   time stamped wheel encoder data using libspi52.so
+
         self._odom = odom53.Odom()  # instance Odom() class to compute odometry
 
         self._t0 = self._spi.rdEncoders()   # equalize t0 & t1 before periodic updates in 
@@ -119,13 +156,13 @@ class edbotOdom(object):
         self._cnt = 20;
 
 if __name__ == '__main__':    # this code runs 1st if module is run as $ python module.py
-    odometry = edbotOdom()    # & not being imported:                    import module.py
+    edbotodom = edbotOdom()    #                   & not being imported:  import module.py
     try:
-        odometry.Start()
-	r = rospy.Rate(20)               # update odometry at 20Hz
+        edbotodom.Start()
+	r = rospy.Rate(20)               # update/publish  odometry at 20Hz
 	while not rospy.is_shutdown():
-		odometry.update()
+		edbotodom.update()
 		r.sleep()
 
     except rospy.ROSInterruptException:
-        odometry.Stop()
+        edbotodom.Stop()
