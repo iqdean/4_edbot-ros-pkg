@@ -7,8 +7,9 @@ Created Sept 2016
  this ros node publishs odometry messages so ros navigation stack
  can localize the robot on a static map of the world.
 
- Thanks to Intel's lame design of edison gpio mux controls and 
- the idiotic libmraa that controls the gpio mux setting using sysfs:
+ Thanks to Intel's lame hw design of edison gpio mux controls and 
+ the idiotic sw library (libmraa) that controls the gpio mux setting 
+ via sysfs:
 
  a) U have to have root priviliges to start programs that incorporate 
     libmraa to config edison gpio settings.
@@ -16,22 +17,22 @@ Created Sept 2016
     various other gpio signals will glitch.
  c) the spi bus interface driver that intel puts out is useless for any
     practical purposes...it's quicker to bitbang the spi i/f than use
-    intel's spi driver, which is the for having the libspi5.so library
-    use libmraa's memory-mapped gpio i/f to bit bang the spi bus to read
+    intel's spi driver, which i'm having wr/use libspi5.so library
+    which uses libmraa's memory-mapped gpio i/f to bit bang the spi bus to read
     wheel encoders interfaced to spi-based quadrature encoder decoders
 
  (a) + (b) + (c) results in  INTEL EDISON and it's associated software 
-  support being a real pain in the ass to work with: 
+  support being a real pain in the rear to work with: 
 
  libspi52.so uses libmraa mem-mapped gpio to bitbang spi i/f
  libmraa's initialization routines that config spi gpio pins cause
  the serial port gpio pins to glitch which causes kangaroo mc to 
- detect serial connection disconnect error E6, which requires the 
+ detect serial connection disconnects (error E6), which requires the 
  Kangaroo MC to be reinitialized otherwise the differential drive 
  system stops responding to drive/turn signals being sent to it
  over the serial port.
 
- WORKAROUNDS:
+ WORKAROUNDS for the above mess:
  1st 
   Start odometriclocalizer.py node... this node will load
   libspi52.so which will use libmraa to initialze spi bus gpio
@@ -83,12 +84,18 @@ class edbotOdom(object):
         rospy.logdebug("Stopping")
 
     def update(self):
-        now = rospy.get_rostime()
-        rospy.loginfo("Current time %i %i", now.secs, now.nsecs)
+        #now = rospy.get_rostime()
+        #rospy.loginfo("Current time %i %i", now.secs, now.nsecs)
         self._t1 = self._t0                   # previous t1 = current
         self._t0 = self._spi.rdEncoders()     # current  t0 = new sample  ---present state--
         self._odom.update(self._t0, self._t1) # calc odometry = f(t0,t1, [X Y Heading V Omega])
-        print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
+
+        #print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
+        self._cnt -= 1
+        if ( (self._cnt == 0) || (self._cnt == 10) ):
+                    print "OUT: X: %f Y: %f Heading: %f V: %f Omega: %f" % (self._odom.X, self._odom.Y, self._odom.Heading, self._odom.V, self._odom.Omega)
+                    if (self._cnt == 0):
+                        self._cnt = 20
 
     def __init__(self):
 
@@ -109,11 +116,13 @@ class edbotOdom(object):
         self._t0 = self._spi.rdEncoders()   # equalize t0 & t1 before periodic updates in 
         self._t1 = self._spi.rdEncoders()   # case we r starting w non-zero encoder counts
 
+        self._cnt = 20;
+
 if __name__ == '__main__':    # this code runs 1st if module is run as $ python module.py
     odometry = edbotOdom()    # & not being imported:                    import module.py
     try:
         odometry.Start()
-	r = rospy.Rate(4)
+	r = rospy.Rate(20)               # update odometry at 20Hz
 	while not rospy.is_shutdown():
 		odometry.update()
 		r.sleep()
