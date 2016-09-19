@@ -12,18 +12,19 @@ countsPerRev = 1024      # 1024 = wheel encoder resolution
 >>> import math
 >>> math.pi
 3.141592653589793 
-Robot Parmeters
->>> wd = .2476         wheelDiameter   .2476 m = 9.75"
->>> tw = .4572         trackWidth      .4572 m = 18"
+Robot Parmeters    wheelCircumfrence    825mm   = Pi*Dia           
+>>> wd = .2626         wheelDiameter   .2626 m  = 825mm/3.14
+>>> tw = .4680         trackWidth      .4680 m
 >>> cpr = 1024         Wheel Encoders  1024 cpr (counts per rev)
 
 >>> dpc = (math.pi * wd)/cpr   distancePerCount  k1
 >>> rpc = dpc/tw               radiansPerCount   k2
 
 >>> dpc
-0.0007596272861609695
+0.0008056467097975387
 >>> rpc
-0.0016614770038516395
+0.0017214673286272194
+
 
                 x LEFT    y RIGHT     <- looking forward on the robot
                 WHEEL     WHEEL
@@ -75,8 +76,8 @@ class Odom(object):
     V = 0.0
     Omega = 0.0
 
-    k1_dpc = 0.0007596272861609695
-    k2_rpc = 0.0016614770038516395
+    k1_dpc = 0.0008056467097975387
+    k2_rpc = 0.0017214673286272194
     PI = 3.141592653589793
     TwoPI = 6.283185307179586
 

@@ -90,9 +90,9 @@ class DiffDrv(object):
 		# set the units for all subseqent drive/turn commands
 		# units are based on robot geometry (wheel dia, track width, encoder resolution)
 		# REF: https://www.dimensionengineering.com/info/encoders?mode=mixed
-		message = 'd,units 779 mm = 1024 lines\r\n'
+		message = 'd,units 825 mm = 1024 lines\r\n'
 		self._SerialDataGateway.Write(message)
-		message = 't,units 360 degrees = 1891 lines\r\n'
+		message = 't,units 360 degrees = 1825 lines\r\n'
 		self._SerialDataGateway.Write(message)
 
 	def _KangarooMC_stop(self):
