@@ -7,7 +7,8 @@ odom53.py - python class to compute odometry based on wheel encoder samples
 Robot Parameters
 wheelDiameter = .2476    # .2476 m = 9.75"
 trackWidth = .4572       # .4572 m = 18"
-countsPerRev = 1024      # 1024 = wheel encoder resolution
+countsPerRev = 4096      # 4096 cpr of the wheel 
+(256 raw x4 gear x4 quad enc)
 
 >>> import math
 >>> math.pi
@@ -15,16 +16,15 @@ countsPerRev = 1024      # 1024 = wheel encoder resolution
 Robot Parmeters    wheelCircumfrence    825mm   = Pi*Dia           
 >>> wd = .2626         wheelDiameter   .2626 m  = 825mm/3.14
 >>> tw = .4680         trackWidth      .4680 m
->>> cpr = 1024         Wheel Encoders  1024 cpr (counts per rev)
+>>> cpr = 4096         Wheel Encoders  1024 cpr (counts per rev)
 
 >>> dpc = (math.pi * wd)/cpr   distancePerCount  k1
 >>> rpc = dpc/tw               radiansPerCount   k2
 
 >>> dpc
-0.0008056467097975387
+0.00020141167744938468
 >>> rpc
-0.0017214673286272194
-
+0.00043036683215680484
 
                 x LEFT    y RIGHT     <- looking forward on the robot
                 WHEEL     WHEEL
@@ -76,14 +76,14 @@ class Odom(object):
     V = 0.0
     Omega = 0.0
 
-    k1_dpc = 0.0008056467097975387
-    k2_rpc = 0.0017214673286272194
+    k1_dpc = 0.00020141167744938468
+    k2_rpc = 0.00043036683215680484 
     PI = 3.141592653589793
     TwoPI = 6.283185307179586
 
     def update(self,t0,t1):
 	#print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
-        #print "t0.y : %8X %d %d" % (t0.y_enc, t0.y_ts_sec, t0.y_ts_ns)
+        #print "t1.y : %8X %d %d" % (t1.y_enc, t1.y_ts_sec, t1.y_ts_ns)
         #print "IN : X: %f Y: %f Heading: %f V: %f Omega: %f" % (Odom.X, Odom.Y, Odom.Heading, Odom.V, Odom.Omega)
 
 	# encoder counts need to be interpeted as 32bit 2's complement encoded numbers
@@ -108,7 +108,8 @@ class Odom(object):
         else:
                 t1y = t1.y_enc
 
- 
+        #print "t0x: %d t1x: %d t0y: %d t1y: %d" % (t0x, t1x, t0y, t1y)
+
         deltaLeft = t0x - t1x    # delta = current - previous
         deltaRight= t0y - t1y    #            t0       t1
 
@@ -122,6 +123,9 @@ class Odom(object):
         deltaY = deltaDistance * math.sin(Odom.Heading);
 
         deltaHeading = (deltaRight - deltaLeft) * Odom.k2_rpc
+
+        #print "dLeft: %d dRight: %d dt: %f dDist: %f dX: %f dY: %f dHeading: %f" % (
+        #    deltaLeft, deltaRight, deltaTime, deltaDistance, deltaX, deltaY, deltaHeading)
 
         Odom.X += deltaX
         Odom.Y += deltaY
