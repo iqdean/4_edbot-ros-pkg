@@ -1,5 +1,7 @@
 # 4_edbot-ros-pkg
-Edbot research robot. edbot is powered by ROS-Indigo running on top of 
+Edbot research robot. 
+
+edbot is powered by ROS-Indigo running on top of 
 ubilinux, a debian wheezy based linux disto, on a Intel Edison 
 platform. Edbot's differential drive system is built from 2 dc 
 gear motors driven by Dimension Engineering's Kanagroo Motion 
