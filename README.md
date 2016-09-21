@@ -14,7 +14,7 @@ edbot src/diffdrv.py
 edbot robot base differential drive controller: 
 subscribes to /cmd_vel. translates linear & angular command velocities 
 from ros /cmd_vel topic into motion control command sequences needed by 
-kangaroo motion controller. kangaroo mc is interfaces to edison via 
+kangaroo motion controller. kangaroo mc interfaces to edison via 
 19.2KBs serial link.
 
 edbot src/odometriclocalizer.py
