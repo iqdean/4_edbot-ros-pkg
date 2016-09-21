@@ -131,7 +131,6 @@ class edbotOdom(object):
 
 	self._OdometryPublisher.publish(odometry)
 
-
     def __init__(self):
 
         rospy.init_node('edbotodom')
@@ -148,7 +147,13 @@ class edbotOdom(object):
         self._spi = edspi53.Spi()   # instance Spi() class to read samples of 
         self._spi.start()           #   time stamped wheel encoder data using libspi52.so
 
-        self._odom = odom53.Odom()  # instance Odom() class to compute odometry
+        # TODO
+        # - create launch file to read robot parameters from yaml file and store them to ros param server
+        # - add code to read robot parameters stored on ros param server
+        wd = .2626
+        tw = .4680
+        cpr = 4096
+        self._odom = odom53.Odom(wd,tw,cpr)  # instance Odom() class to compute odometry
 
         self._t0 = self._spi.rdEncoders()   # equalize t0 & t1 before periodic updates in 
         self._t1 = self._spi.rdEncoders()   # case we r starting w non-zero encoder counts

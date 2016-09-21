@@ -4,20 +4,14 @@ Created Sept 2016
 
 odom53.py - python class to compute odometry based on wheel encoder samples
 
-Robot Parameters
-wheelDiameter = .2476    # .2476 m = 9.75"
-trackWidth = .4572       # .4572 m = 18"
-countsPerRev = 4096      # 4096 cpr of the wheel 
-(256 raw x4 gear x4 quad enc)
-
 >>> import math
 >>> math.pi
 3.141592653589793 
+Measured
 Robot Parmeters    wheelCircumfrence    825mm   = Pi*Dia           
 >>> wd = .2626         wheelDiameter   .2626 m  = 825mm/3.14
 >>> tw = .4680         trackWidth      .4680 m
->>> cpr = 4096         Wheel Encoders  1024 cpr (counts per rev)
-
+>>> cpr = 4096         Wheel Encoders   4096 cpr (counts per rev)
 >>> dpc = (math.pi * wd)/cpr   distancePerCount  k1
 >>> rpc = dpc/tw               radiansPerCount   k2
 
@@ -76,10 +70,24 @@ class Odom(object):
     V = 0.0
     Omega = 0.0
 
-    k1_dpc = 0.00020141167744938468
-    k2_rpc = 0.00043036683215680484 
+    #k1_dpc = 0.00020141167744938468
+    #k2_rpc = 0.00043036683215680484
     PI = 3.141592653589793
     TwoPI = 6.283185307179586
+    
+    # robot param units:    meters      meters     counts per wheel rev
+    #                         |           |          |
+    # ex:                 .2626         .4680      4096
+    def __init__(self, wheelDiameter, trackWidth, encoderCPR):
+
+	print "Robot Params: wd: %f tw: %f cpr: %d" % (wheelDiameter, trackWidth, encoderCPR)
+	# Robot Params: wd: 0.262600 tw: 0.468000 cpr: 4096 
+
+        self.k1_dpc = (math.pi * wheelDiameter)/encoderCPR     # distancePerCount k1_dpc = (PI * wheelDia)/encCPR
+        self.k2_rpc = self.k1_dpc / trackWidth                 # radiansPerCount  k2_rpc = k1_dpc / trackWidth
+
+	print "k1_dpc: %1.15f k2_rpc: %1.15f" % (self.k1_dpc, self.k2_rpc)
+	# k1_dpc: 0.000201411677449 k2_rpc: 0.000430366832157
 
     def update(self,t0,t1):
 	#print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
@@ -117,12 +125,12 @@ class Odom(object):
         deltaTime_ns = (t0.x_ts_ns - t1.x_ts_ns)*(1.0/1000000000.0)    # dt_ns part in sec
         deltaTime = deltaTime_sec + deltaTime_ns                       # delta t in sec
 
-        deltaDistance = 0.5 * (deltaLeft + deltaRight)*Odom.k1_dpc
+        deltaDistance = 0.5 * (deltaLeft + deltaRight)*self.k1_dpc
 
         deltaX = deltaDistance * math.cos(Odom.Heading);
         deltaY = deltaDistance * math.sin(Odom.Heading);
 
-        deltaHeading = (deltaRight - deltaLeft) * Odom.k2_rpc
+        deltaHeading = (deltaRight - deltaLeft) * self.k2_rpc
 
         #print "dLeft: %d dRight: %d dt: %f dDist: %f dX: %f dY: %f dHeading: %f" % (
         #    deltaLeft, deltaRight, deltaTime, deltaDistance, deltaX, deltaY, deltaHeading)
