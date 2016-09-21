@@ -71,7 +71,7 @@ class Odom(object):
     Omega = 0.0
 
     #k1_dpc = 0.00020141167744938468
-    #k2_rpc = 0.00043036683215680484 
+    #k2_rpc = 0.00043036683215680484
     PI = 3.141592653589793
     TwoPI = 6.283185307179586
     
@@ -79,10 +79,15 @@ class Odom(object):
     #                         |           |          |
     # ex:                 .2626         .4680      4096
     def __init__(self, wheelDiameter, trackWidth, encoderCPR):
-        print "Robot Params: wd: %f tw: %f cpr: %d" % (wheelDiameter, trackWidth, encoderCPR)
+
+	print "Robot Params: wd: %f tw: %f cpr: %d" % (wheelDiameter, trackWidth, encoderCPR)
+	# Robot Params: wd: 0.262600 tw: 0.468000 cpr: 4096 
+
         self.k1_dpc = (math.pi * wheelDiameter)/encoderCPR     # distancePerCount k1_dpc = (PI * wheelDia)/encCPR
         self.k2_rpc = self.k1_dpc / trackWidth                 # radiansPerCount  k2_rpc = k1_dpc / trackWidth
-        print "k1_dpc: %f k2_rpc: %f" % (self.k1_dpc, self.k2_rpc)
+
+	print "k1_dpc: %1.15f k2_rpc: %1.15f" % (self.k1_dpc, self.k2_rpc)
+	# k1_dpc: 0.000201411677449 k2_rpc: 0.000430366832157
 
     def update(self,t0,t1):
 	#print "t0.x : %8X %d %d" % (t0.x_enc, t0.x_ts_sec, t0.x_ts_ns)
