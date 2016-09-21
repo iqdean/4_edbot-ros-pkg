@@ -9,7 +9,7 @@ This edbot ros package contains the following nodes:
 
 edbot src/diffdrv.py
 
-edbot robot base differential drive controller
+edbot robot base differential drive controller: 
 subscribes to /cmd_vel. translates linear & angular command velocities 
 from ros /cmd_vel topic into motion control command sequences needed by 
 kangaroo motion controller. kangaroo mc is interfaces to edison via 
@@ -17,7 +17,7 @@ kangaroo motion controller. kangaroo mc is interfaces to edison via
 
 edbot src/odometriclocalizer.py
 
-edbot robot differential drive controller
+edbot robot differential drive controller:
 Based on robot parameters (wheel dia, track width, encCPR) & wheel 
 encoder counts, this node computes  and publishes odometry and 
 tf (between /odom world frame & /base_link frame)
