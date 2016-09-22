@@ -12,6 +12,8 @@ a) roscore
 b) rosbridge_websocket       include rosbridge_websocket.launch
 c) load edbot robot param    include robot_param.launch
 d) edbot odometriclocalizer  rds wheel encoders & publishes odometry
+   timed_roslaunch.sh        waits 4 sec to make sure odometriclocalizer is up
+                             & then launches diffdev node
 e) edbot diffdrv             subcribes to /cmd_vel & drives motors using motion controller
 -->
 
@@ -19,5 +21,5 @@ e) edbot diffdrv             subcribes to /cmd_vel & drives motors using motion 
 	<include file="$(find edbot)/launch/robot_params.launch" />	
 	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
 	<node name="edbotodom" pkg="edbot" type="odometriclocalizer.py" />
-	<node name="diffdrv" pkg="edbot" type="diffdrv.py" />
+	<node name="timed_roslaunch" pkg="edbot" type="timed_roslaunch.sh" args="4 edbot diffdrv1.launch" output="screen" />
 </launch>
