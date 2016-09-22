@@ -1,0 +1,3 @@
+<launch>
+  <node name="timed_roslaunch" pkg="edbot" type="timed_roslaunch.sh" args="4 edbot robot_params.launch" output="screen"/>
+</launch>
