@@ -1,0 +1,14 @@
+<!-- 
+     edbot robot parameters
+     wheel_dia   .2626 m
+     track_width .4680 m
+     enc_cpr      4096 counts per wheel revolution
+-->
+
+<launch>
+  <group ns="edbot">
+    <param name="wheel_dia" value=".2626" />
+    <param name="track_width" value=".4680" />
+    <param name="enc_cpr" value="4096" />
+  </group>
+</launch>

@@ -146,13 +146,14 @@ class edbotOdom(object):
 
         self._spi = edspi53.Spi()   # instance Spi() class to read samples of 
         self._spi.start()           #   time stamped wheel encoder data using libspi52.so
-
-        # TODO
-        # - create launch file to read robot parameters from yaml file and store them to ros param server
-        # - add code to read robot parameters stored on ros param server
-        wd = .2626
-        tw = .4680
-        cpr = 4096
+    
+        #wd = .2626
+        #tw = .4680
+        #cpr = 4096
+        wd = rospy.get_param('/edbot/wheel_dia', .2626)
+        tw = rospy.get_param('/edbot/track_width', .4680)
+        cpr = rospy.get_param('/edbot/enc_cpr', 4096)
+        
         self._odom = odom53.Odom(wd,tw,cpr)  # instance Odom() class to compute odometry
 
         self._t0 = self._spi.rdEncoders()   # equalize t0 & t1 before periodic updates in 
