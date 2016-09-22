@@ -1,0 +1,23 @@
+<!--
+Launch edbot robot base controller
+
+You have to be root to run this launch file due to libmraa permissions issue:
+$ roscd edbot/src
+$ sudo /bin/bash
+$ source startOdomAsRoot
+$ roslaunch edbot edbot_rbc.launch
+
+edbot_rbc.launch file will start:
+a) roscore
+b) rosbridge_websocket       include rosbridge_websocket.launch
+c) load edbot robot param    include robot_param.launch
+d) edbot odometriclocalizer  rds wheel encoders & publishes odometry
+e) edbot diffdrv             subcribes to /cmd_vel & drives motors using motion controller
+-->
+
+<launch>
+	<include file="$(find edbot)/launch/robot_params.launch" />	
+	<include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" />
+	<node name="edbotodom" pkg="edbot" type="odometriclocalizer.py" />
+	<node name="diffdrv" pkg="edbot" type="diffdrv.py" />
+</launch>
